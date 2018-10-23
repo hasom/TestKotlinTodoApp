@@ -30,12 +30,9 @@ class AddActivity : AppCompatActivity() {
             todoDB?.todoDao()?.insert(newTodo)
         }
 
-        mAddBtn.setOnClickListener {
+        fab.setOnClickListener {
             val addThread = Thread(addRunnable)
             addThread.start()
-
-            val i = Intent(this, MainActivity::class.java)
-            startActivity(i)
             finish()
         }
 

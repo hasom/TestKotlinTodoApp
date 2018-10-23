@@ -22,39 +22,47 @@ class MainActivity : AppCompatActivity() {
     private var todoList = listOf<Todo>()
     lateinit var mAdapter: TodoAdapter
 
+
+    var r = Runnable {
+        try {
+            todoList = todoDB?.todoDao()?.getAll()!!
+            System.out.println("count = " + todoList.size)
+
+            this@MainActivity.runOnUiThread {
+                mAdapter.setListData(todoList)
+                mAdapter.notifyDataSetChanged()
+            }
+
+
+        } catch (e : Exception) {
+            Log.e("tag", "Error - $e")
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         todoDB = TodoDB.getInstance(this)
 
-        var r = Runnable {
-            try {
-                todoList = todoDB?.todoDao()?.getAll()!!
-                System.out.println("count = " + todoList.size)
+        mAdapter = TodoAdapter(this, todoList, { todo : Todo -> onItemClicked(todo) })
 
-                mAdapter = TodoAdapter(this, todoList, { todo : Todo -> onItemClicked(todo) })
-                mAdapter.notifyDataSetChanged()
+        listView.adapter = mAdapter
+        listView.layoutManager = LinearLayoutManager(this)
+        listView.setHasFixedSize(true)
+        listView.addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager(this).orientation))
 
-                listView.adapter = mAdapter
-                listView.layoutManager = LinearLayoutManager(this)
-                listView.setHasFixedSize(true)
-                listView.addItemDecoration(DividerItemDecoration(applicationContext, LinearLayoutManager(this).orientation))
-
-            } catch (e : Exception) {
-                Log.e("tag", "Error - $e")
-            }
-        }
-
-        val thread = Thread(r)
-        thread.start()
-
-
-         mAddBtn.setOnClickListener{
+        fab.setOnClickListener{
              val i = Intent(this, AddActivity::class.java)
              startActivity(i)
-             finish()
-         }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val thread = Thread(r)
+        thread.start()
     }
 
     private fun onItemClicked(todo : Todo) {

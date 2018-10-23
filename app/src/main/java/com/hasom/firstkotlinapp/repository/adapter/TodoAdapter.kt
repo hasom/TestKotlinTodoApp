@@ -13,7 +13,7 @@ import com.hasom.firstkotlinapp.repository.TodoDB
 import com.hasom.firstkotlinapp.repository.entity.Todo
 
 
-class TodoAdapter(val context: Context, val todoList: List<Todo>, val clickListener: (Todo) -> Unit) :
+class TodoAdapter(val context: Context, var todoList: List<Todo>, val clickListener: (Todo) -> Unit) :
     Adapter<TodoAdapter.Holder>() {
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -29,6 +29,9 @@ class TodoAdapter(val context: Context, val todoList: List<Todo>, val clickListe
         return todoList.size
     }
 
+    fun setListData(list : List<Todo>) {
+        this.todoList = list;
+    }
 
 
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
